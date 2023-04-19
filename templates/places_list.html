@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% if places %}
+        <script src="{% static 'js/editable.js' %}"></script>
+        <script src="{% static 'js/new_row.js' %}"></script>
+        <div class="table-responsive">
+            <table class="places-list-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Rating</th>
+                        <th>Notes</th>
+                        <th>Yelp ID</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for place in places %}
+                        <tr data-place-id="{{ place.id }}">
+                            <td class="editable" data-field-name="name">{{ place.name }}</td>
+                            <td class="editable rating">
+                                {% for i in range %}
+                                    {% if i <= place.rating %}
+                                        <span class="star filled" data-rating="{{ i }}">{{ "★" }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                              </td>
+                            <td class="editable" data-field-name="notes">{{ place.notes }}</td>
+                            <td class="editable" data-field-name="yelp_id">{{ place.yelp_id }}</td>
+                            <td class="editable" data-field-name="location">{{ place.location }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+        {% csrf_token %}
+        <button id="add-new-place">Add new place</button>
+    {% else %}
+        <p>No places found.</p>
+    {% endif %}
+{% endblock %}
