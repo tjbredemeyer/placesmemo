@@ -55,7 +55,7 @@
     {% endif %}
 </div>
     <script>
-        $('#tag-select').on('change', function() {
+        $('.tag-select').on('change', function() {
             $('.places-list-item.row').hide();
             var selectedTag = $(this).val();
             $('.tag').each(function() {
