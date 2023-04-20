@@ -7,7 +7,7 @@ class PlaceForm(forms.ModelForm):
     class Meta:
         '''This class defines the fields that are used in the form.'''
         model = Place
-        fields = ['name', 'rating', 'notes', 'tags', 'yelp_id', 'location']
+        fields = ['name', 'rating', 'location', 'notes', 'tags', 'yelp_id']
 
     def clean_tags(self):
         '''This method returns a list of lowercase tags.'''
