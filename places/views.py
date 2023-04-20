@@ -1,56 +1,138 @@
 '''This is the views.py file for the places app'''
-from django.shortcuts import render
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.http import JsonResponse
+from django.http import Http404
 from django.urls import reverse_lazy
+from django.utils.text import slugify
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from taggit.models import Tag, TaggedItem
 from .models import Place
 from .forms import PlaceForm
 
 
-def add_tag(request):
-    '''This view adds a tag to a place.'''
-    pass
-
-
-class PlacesListView(ListView):
+class PlacesListView(LoginRequiredMixin, ListView):
     '''This view returns a list of places.'''
     model = Place
-    context_object_name = 'place_list'
-    template_name = 'places_list.html'
+    context_object_name = 'places_list'
+    template_name = 'places.html'
 
     def get_queryset(self):
-        '''This method returns a list of places.'''
-        places = list(Place.objects.all())
-        return places
+        '''This method returns a list of places for the current user.'''
+        return Place.objects.filter(created_by=self.request.user)
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags'] = Place.objects.filter(
+            created_by=self.request.user
+        ).values_list(
+            'tags__name',
+            flat=True
+        ).distinct()
+        return context
+
+
+class PlaceDetailView(LoginRequiredMixin, DetailView):
+    '''This view returns a single place.'''
+    model = Place
+    template_name = 'place_detail.html'
+    context_object_name = 'place'
+    pk_url_kwarg = 'place_id'
+
+
+    def get_object(self, queryset=None):
+        '''Return the object if it belongs to the current user.'''
+        obj = super().get_object(queryset=queryset)
+        if obj.created_by != self.request.user:
+            raise Http404()
+        return obj
+
+
+class PlaceCreateView(LoginRequiredMixin, CreateView):
+    '''This view updates a place's name, rating, tags, or notes'''
+    model = Place
+    form_class = PlaceForm
+    template_name = 'place_form.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Add new place'  # set the title to 'Create'
+        return context
+
+
+    def form_valid(self, form):
+        # Create an instance of the model, but don't save it yet
+        place = form.save(commit=False)
+
+        # Set the user to the current logged-in user
+        place.created_by = self.request.user
+
+        # Slugify the name and set it as the slug field
+        place.slug = slugify(place.name)
+
+        # Save the instance
+        place.save()
+
+        messages.success(self.request, 'Place created successfully')
+
+        return super().form_valid(form)
+
+
+class PlaceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    '''This view updates a place's name, rating, tags, or notes'''
+    model = Place
+    form_class = PlaceForm
+    template_name = 'place_form.html'
+    pk_url_kwarg = 'place_id'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update'  # set the title to 'Update'
+        return context
+
+
+    def test_func(self):
+        '''Check if the current user owns the object.'''
+        obj = self.get_object()
+        return obj.created_by == self.request.user
+
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Place updated successfully')
+        return response
+
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        messages.error(self.request, 'Failed to update place')
+        return response
+
+
+    def get_success_url(self):
+        return reverse_lazy('place_detail', kwargs={'slug': self.object.slug})
+
+
+class PlaceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    '''This view deletes a place.'''
+    model = Place
+    pk_url_kwarg = 'place_id'
+
+    def test_func(self):
+        '''Check if the current user owns the object.'''
+        obj = self.get_object()
+        return obj.created_by == self.request.user
 
     def get(self, request, *args, **kwargs):
-        '''This method returns a list of places.'''
-        places = Place.objects.all()
-        return render(
-            request,
-            'places_list.html', 
-            {
-                'places': places, 
-                'range': range(5)
-            }
-        )
+        # Call the delete method directly
+        return self.delete(request, *args, **kwargs)
 
-class PlaceCreateView(CreateView):
-    '''This view allows a user to create a new place.'''
-    model = Place
-    form_class = PlaceForm
-    success_url = reverse_lazy('places_list')
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Place deleted successfully')
+        return super().delete(request, *args, **kwargs)
 
-
-class PlaceUpdateView(UpdateView):
-    '''This view allows a user to update a place.'''
-    model = Place
-    form_class = PlaceForm
-    success_url = reverse_lazy('places_list')
-
-
-class PlaceDeleteView(DeleteView):
-    '''This view allows a user to delete a place.'''
-    model = Place
-    template_name = 'place_confirm_delete.html'
-    success_url = reverse_lazy('place_list')
+    def get_success_url(self):
+        return reverse_lazy('places')

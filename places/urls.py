@@ -7,29 +7,26 @@ urlpatterns = [
     path(
         '', 
         views.PlacesListView.as_view(),
-        name="places_list"
+        name="places"
     ),
     path(
-      'add/',
-      views.PlaceCreateView.as_view(),
-      name='place_add'
+        'create/',
+        views.PlaceCreateView.as_view(),
+        name='place_create'
     ),
-    # TODO not working
     path(
-      '<int:pk>/edit/',
-       views.PlaceUpdateView.as_view(),
-      name='place_edit'
+        '<slug:slug>/',
+        views.PlaceDetailView.as_view(),
+        name='place_detail'
     ),
-    # TODO not functional
     path(
-        '<int:pk>/delete/', 
+        '<slug:slug>/update/',
+        views.PlaceUpdateView.as_view(),
+        name='place_update'
+    ),
+    path(
+        '<slug:slug>/delete/',
         views.PlaceDeleteView.as_view(),
         name='place_delete'
-    ),
-    # TODO not functional
-    path(
-        'add-tag/',
-        views.add_tag,
-        name='add_tag'
     ),
 ]

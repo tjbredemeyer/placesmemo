@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>{{ title }} {{ place.name }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" name="name" id="name" class="form-control" value="{{ place.name }}">
+    </div>
+
+    <div class="form-group">
+      <label for="rating">Rating:</label>
+      <select name="rating" id="rating" class="form-control">
+        {% for i in "12345" %}
+          {% if forloop.counter == place.rating %}
+            <option value="{{ forloop.counter }}" selected>{{ i }} star</option>
+          {% else %}
+            <option value="{{ forloop.counter }}">{{ i }} star</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+        <label for="tags">Tags:</label>
+        <input type="text" name="tags" id="tags" class="form-control" value="{{ place.tags.all|join:', ' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notes:</label>
+      <textarea name="notes" id="notes" class="form-control">{{ place.notes }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+{% endblock %}

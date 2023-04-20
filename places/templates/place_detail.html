@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <h1>{{ place.name }}</h1>
+    
+    <p>
+        Rating:<span class="editable rating">
+            {% for i in "12345" %}
+                {% if forloop.counter <= place.rating %}
+                    <span class="star filled" data-rating="{{ i }}">{{ "★" }}</span>
+                {% else %}
+                    <span class="star" data-rating="{{ i }}">{{ "☆" }}</span>
+                {% endif %}
+            {% endfor %}
+        </span>
+    </p>
+    <p>
+        Tags:<span>
+            {% for tag in place.tags.all %}
+                {{ tag.name }}
+            {% empty %}
+                No tags.
+            {% endfor %}
+        </span>
+    </p>
+    Notes:
+    <p>{{ place.notes }}</p>
+    <a href="{% url 'place_update' slug=place.slug %}">Update</a>
+    <a href="{% url 'place_delete' slug=place.slug %}">Delete</a>
+{% endblock %}
