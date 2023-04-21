@@ -4,9 +4,7 @@ from django.urls import reverse_lazy
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from taggit.models import Tag, TaggedItem
 from .models import Place
 from .forms import PlaceForm
 
@@ -20,7 +18,7 @@ class PlacesListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         '''This method returns a list of places for the current user.'''
         return Place.objects.filter(created_by=self.request.user)
-    
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
