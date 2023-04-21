@@ -94,10 +94,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='DATABASE_URL',
-        conn_max_age=600,
-    )
+    'default': DATABASE_URL
 }
 
 # Password validation
