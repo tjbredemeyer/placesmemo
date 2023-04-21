@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% if place %}
+    {% csrf_token %}
+    <div id="detail">
+        <ul class="place-detail">
+            <li class="place-detail-item row" data-place-id="{{ place.id }}" data-tags="{% for tag in place.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                    <div class="place-list-item name left">
+                        {{ place.name }}
+                    </div>
+                    <div class="place-detail-item rating left">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= place.rating %}
+                                <span class="star filled" data-rating="{{ i }}">{{ "★" }}</span>
+                            {% else %}
+                                <span class="star" data-rating="{{ i }}">{{ "☆" }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if place.location %}
+                        <div class="place-detail-item location left">{{ place.location }}</div>
+                    {% endif %}
+                    <div class="place-detail-item contents bottom">
+                        <div class="place-detail-item tags left">
+                            {% if place.tags.all.count == 0 %}
+                                <span class="tag">No tags</span>
+                            {% else %}
+                                {% for tag in place.tags.all %}
+                                    <span class="tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% if place.notes %}
+                            <div class="place-detail-item notes left">{{ place.notes }}</div>
+                        {% endif %}
+                    </div>
+            </li>
+        </ul>
+    </div>
+    {% else %}
+        <p>No places found.</p>
+    {% endif %}
+</div>
+    <a href="{% url 'place_update' slug=place.slug %}"><button class="detail">Update</button></a>
+    <a href="{% url 'place_delete' slug=place.slug %}"><button class="detail delete">Delete</button></a>
+{% endblock %}

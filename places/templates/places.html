@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div id="content-container">
+    <div id="heading-container">
+        <div class="heading">
+            Places
+        </div>
+        {% if places_list %}
+        <div class="tag-selector">
+            {% if tags %}
+                <select class="tag-select">
+                    <option value="">All tags</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+        {% endif %}
+        </div>
+    </div>
+    {% csrf_token %}
+    <div id="list">
+        <ul class="places-list">
+            {% for place in places_list %}
+            <li class="places-list-item row" data-place-id="{{ place.id }}" data-tags="{% for tag in place.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                    <div class="places-list-item name left">
+                        <a href="{% url 'place_detail' place.slug %}">
+                            {{ place.name }}
+                        </a>
+                    </div>
+                    <div class="places-list-item rating left">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= place.rating %}
+                                <span class="star filled" data-rating="{{ i }}">{{ "★" }}</span>
+                            {% else %}
+                                <span class="star" data-rating="{{ i }}">{{ "☆" }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if place.location %}
+                        <div class="places-list-item location left">{{ place.location }}</div>
+                    {% endif %}
+                    <div class="places-list-item contents bottom">
+                        <div class="places-list-item tags left">
+                            {% if place.tags.all.count == 0 %}
+                                <span class="tag">No tags</span>
+                            {% else %}
+                                {% for tag in place.tags.all %}
+                                    <span class="tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% if place.notes %}
+                            <div class="places-list-item notes left">{{ place.notes }}</div>
+                        {% endif %}
+                    </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+        <p>No places found.</p>
+    {% endif %}
+</div>
+    <script>
+        $('.tag-select').on('change', function() {
+            $('.places-list-item.row').hide();
+            var selectedTag = $(this).val();
+            $('.tag').each(function() {
+                var tag = $(this).text();
+                console.log(tag)
+                    if (tag === selectedTag || !selectedTag) {
+                        console.log(tag)
+                        $(this).closest('.places-list-item.row').show();
+                }
+            });
+        });
+    </script>
+{% endblock %}
