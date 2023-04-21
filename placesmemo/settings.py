@@ -95,7 +95,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        default='DATABASE_URL',
         conn_max_age=600,
     )
 }
