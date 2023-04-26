@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
+{% block content %}
+    <h1>{{ page_title }}</h1>
+    {% if place_list %}
+        <ul>
+            {% for place in place_list %}
+            <a href="{% url 'places:detail' place.slug %}">
+                <li class="row" data-place-id="{{ place.id }}">
+                    <span>Name: {{ place.name }}</span>
+                    {% if place.location %}
+                        <span>Location: {{ place.location }}</span>
+                    {% endif %}
+                    {% if place.owner %}
+                        <span>Owner: {{ place.owner }}</span>
+                    {% endif %}
+                </li>
+            </a>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No places found.</p>
+    {% endif %}
+    <br>
+    <a href="{% url 'places:create' %}"><button>Create a Place</button></a>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
+{% block content %}
+<h1>{{ page_title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  <label for="name">Name:</label>
+  <input type="text" name="name" id="name" class="form-control" value="{{ list.name }}">
+  <br>
+  <button type="submit">Save</button>
+</form>
+{% endblock %}

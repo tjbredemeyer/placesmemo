@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import dj_database_url
+
+# import dj_database_url
 
 
 load_dotenv()
@@ -30,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = ["placesmemo.com"]
+ALLOWED_HOSTS = ["*"]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -46,10 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "taggit",
-    "places",
-    "lists",
     "accounts",
+    "places",
+    "memos",
+    "lists",
+    "tags",
 ]
 
 
@@ -93,11 +95,32 @@ SECRET_KEY = os.environ.get("SECRET_KEY", default="your secret key")
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         default=None,
+#         conn_max_age=600,
+#     )
+# }
+# TODO - change back to env var
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "pmtest",
+#         "USER": "tjbredemeyer",
+#         "PASSWORD": "wtLEckO88GaQwUDHCcZuzlPpKoJKLnEX",
+#         "HOST": "dpg-cgstrvrk9u58arlfkvu0-a.oregon-postgres.render.com",
+#         "PORT": "5432",
+#     }
+# }
 DATABASES = {
-    "default": dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "placesmemo",
+        "USER": "tjbredemeyer",
+        "PASSWORD": "nice",
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
 }
 
 # Password validation
@@ -142,11 +165,15 @@ if not DEBUG:  # Tell Django to copy statics to the `staticfiles` directory
     STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATICFILES_STORAGE = (
+        "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "places"
+LOGIN_REDIRECT_URL = "memos:list"
+
+LOGIN_URL = "/account/login/"

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
+{% load static %}
+{% block content %}
+    {% if memo %}
+        <h1>{{ page_title }}</h1>
+        Rating: {{ memo.rating }}
+        {% if memo.tags.all.count == 0 %}
+        {% else %}
+            Tags: 
+            {% for tag in memo.tags.all %}
+                <span class="tag">{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if memo.notes %}
+            Notes: {{ memo.notes }}
+        {% endif %}
+        {% if memo.lists %}
+            Lists: 
+            {% for list in memo.lists.all %}
+                {{ list.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        {% endif %}
+        <br><br>
+        <a href="{% url 'memos:update' pk=memo.pk %}"><button class="detail">Update</button></a>
+        <a href="{% url 'memos:delete' pk=memo.pk %}"><button class="detail delete">Delete</button></a>
+    {% else %}
+        <p>Memo not found.</p>
+    {% endif %}
+{% endblock %}
