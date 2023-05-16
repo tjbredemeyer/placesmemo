@@ -15,6 +15,6 @@ services:
       value: 4
 
 databases:
-- name: teicor
+- name: placesmemo
   databaseName: placesmemo
   user: tjbredemeyer

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
+{% block content %}
+<h1>{{ page_title }}</h1>
+{% if memo_list %}
+    {% if tags %}
+        <select class="tag-select">
+            <option value="">All tags</option>
+            {% for tag in tags %}
+                <option value="{{ tag }}">{{ tag }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+    <ul>
+        {% for memo in memo_list %}
+            <a href="{% url 'memos:detail' memo.id %}">
+                <li class="row" data-memo-id="{{ memo.id }}" data-tags="{% for tag in memo.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                    Place: {{ memo.place.name }}
+                    Rating: {{ memo.rating }}
+                    {% if memo.place.location %}
+                        Location: {{ memo.place.location }}
+                    {% endif %}
+                    {% if memo.tags.all.count == 0 %}
+                    {% else %}
+                        Tags: 
+                        {% for tag in memo.tags.all %}
+                            <span class="tag">{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if memo.notes %}
+                        Notes: {{ memo.notes }}
+                    {% endif %}
+                </li>
+            </a>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No memos found.</p>
+{% endif %}
+    <script>
+        $('.tag-select').on('change', function() {
+            console.log('hiding all rows')
+            $('.row').hide();
+            var selectedTag = $(this).val();
+            console.log('selected tag: ' + selectedTag)
+            $('.tag').each(function() {
+                var tag = $(this).text();
+                    if (tag === selectedTag || !selectedTag) {
+                        console.log('showing row with tag ' + tag);
+                        $(this).closest('.row').show();
+                }
+            });
+        });
+    </script>
+{% endblock %}

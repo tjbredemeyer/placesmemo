@@ -1,0 +1,15 @@
+{% block navigation %}
+<nav>
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'memos:list' %}">Home</a></li>
+            <li><a href="{% url 'places:list' %}">Places</a></li>
+            <li><a href="{% url 'memos:list' %}">Memos</a></li>
+            <li><a href="{% url 'lists:list' %}">Lists</a></li>
+            <li><a href="{% url 'account:logout' %}">Logout</a></li>
+        {% else %}
+            <li><a href="%{ url 'home' %}">Home</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

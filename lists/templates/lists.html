@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
+{% block content %}
+<h1>{{ page_title }}</h1>
+{% if list_list %}
+    <ul>
+        {% for list in list_list %}
+            <a href="{% url 'lists:detail' list.slug %}">
+                <li class="row" data-list-id="{{ list.slug }}">
+                    List: {{ list.name }}
+                </li>
+            </a>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No lists found.</p>
+{% endif %}
+<br>
+    <a href="{% url 'lists:create' %}"><button>Create a list</button></a>
+{% endblock %}

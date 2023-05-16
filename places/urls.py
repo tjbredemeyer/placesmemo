@@ -1,32 +1,40 @@
-'''URLs for the places app.'''
+"""URLs for the places app."""
 from django.urls import path
 
 from . import views
 
+# set the namespace for the app
+app_name = "places"
+
 urlpatterns = [
+    # Places list
     path(
-        '', 
+        "",
         views.PlacesListView.as_view(),
-        name="places"
+        name="list",
     ),
+    # Create place
     path(
-        'create/',
+        "create/",
         views.PlaceCreateView.as_view(),
-        name='place_create'
+        name="create",
     ),
+    # Place detail
     path(
-        '<slug:slug>/',
+        "<slug:slug>/",
         views.PlaceDetailView.as_view(),
-        name='place_detail'
+        name="detail",
     ),
+    # Update place
     path(
-        '<slug:slug>/update/',
+        "<slug:slug>/update/",
         views.PlaceUpdateView.as_view(),
-        name='place_update'
+        name="update",
     ),
+    # Delete place
     path(
-        '<slug:slug>/delete/',
+        "<slug:slug>/delete/",
         views.PlaceDeleteView.as_view(),
-        name='place_delete'
+        name="delete",
     ),
 ]

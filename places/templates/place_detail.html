@@ -1,47 +1,50 @@
 {% extends "base.html" %}
+{% block title %}
+    {{ page_title }} | {% include "base_title.html" %}
+{% endblock %}
 {% load static %}
 {% block content %}
-    {% if place %}
-    {% csrf_token %}
-    <div id="detail">
-        <ul class="place-detail">
-            <li class="place-detail-item row" data-place-id="{{ place.id }}" data-tags="{% for tag in place.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
-                    <div class="place-list-item name left">
-                        {{ place.name }}
-                    </div>
-                    <div class="place-detail-item rating left">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= place.rating %}
-                                <span class="star filled" data-rating="{{ i }}">{{ "★" }}</span>
+    <h1>{{ place.name }}</h1>
+    <span>Name: {{ place.name }}</span>
+    <br>
+    {% if place.location %}
+        <span>Location: {{ place.location }}</span>
+    {% endif %}
+    {% if request.user == place.owner %}
+        <br><br>
+        <a href="{% url 'places:update' slug=place.slug %}"><button>Update</button></a>
+        <a href="{% url 'places:delete' slug=place.slug %}"><button>Delete</button></a>
+    {% endif %}
+    <br><br>
+    <a href="{% url 'memos:create' %}?place_id={{ place.id }}"><button>Create a Memo</button></a>
+    {% if memos %}
+        <ul>
+            {% for memo in memos %}
+                {% if request.user == memo.created_by  %}
+                    <a href="{% url 'memos:detail' pk=memo.pk %}">
+                        <li class="row" data-memo-id="{{ memo.id }}" data-tags="{% for tag in memo.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                            <span>Created by: {{ memo.created_by }}</span>
+                            <span>Rating: {{ memo.rating }}</span>
+                            {% if memo.tags.all.count == 0 %}
                             {% else %}
-                                <span class="star" data-rating="{{ i }}">{{ "☆" }}</span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    {% if place.location %}
-                        <div class="place-detail-item location left">{{ place.location }}</div>
-                    {% endif %}
-                    <div class="place-detail-item contents bottom">
-                        <div class="place-detail-item tags left">
-                            {% if place.tags.all.count == 0 %}
-                                <span class="tag">No tags</span>
-                            {% else %}
-                                {% for tag in place.tags.all %}
-                                    <span class="tag">{{ tag.name }}</span>
+                                Tags: 
+                                {% for tag in memo.tags.all %}
+                                    <span class="tag">{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             {% endif %}
-                        </div>
-                        {% if place.notes %}
-                            <div class="place-detail-item notes left">{{ place.notes }}</div>
-                        {% endif %}
-                    </div>
-            </li>
+                            <span>Notes: {{ memo.notes }}</span>
+                        </li>
+                    </a>
+                {% else %}
+                    <li class="row" data-memo-id="{{ memo.id }}" data-tags="{% for tag in memo.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                        <span>Created by: {{ memo.created_by }}</span>
+                        <span>Rating: {{ memo.rating }}</span>
+                        <span>Notes: {{ memo.notes }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
         </ul>
-    </div>
     {% else %}
-        <p>No places found.</p>
+        <p>There are no memos for this place, yet.</p>
     {% endif %}
-</div>
-    <a href="{% url 'place_update' slug=place.slug %}"><button class="detail">Update</button></a>
-    <a href="{% url 'place_delete' slug=place.slug %}"><button class="detail delete">Delete</button></a>
 {% endblock %}
